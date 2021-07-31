@@ -4,8 +4,8 @@ const ERROR_MESSAGE_PROMPT: &str = "Really? Try again...";
 
 fn main() {
     display_menu();
-    let chosen_option: u8 = read_and_validate_menu_option();
-    let degrees: f32 = read_degrees();
+    let chosen_option = read_and_validate_menu_option();
+    let degrees = read_degrees();
 
     if chosen_option == 1 {
         let celsius_degrees = fahrenheit_to_celsius(degrees);
@@ -30,7 +30,7 @@ fn read_and_validate_menu_option() -> u8 {
             .read_line(&mut chosen_option)
             .expect("Failed to read line");
 
-        let maybe_valid_option: Option<u8> = chosen_option
+        let maybe_valid_option = chosen_option
             .trim()
             .parse()
             .ok()
