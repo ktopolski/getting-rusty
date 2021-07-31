@@ -9,7 +9,6 @@ fn main() {
 
     if chosen_option == 1 {
         let celsius_degrees = fahrenheit_to_celsius(degrees);
-
         println!("{}F is roughly {}C", degrees, round_2(celsius_degrees));
     } else {
         let fahrenheit_degrees = celsius_to_fahrenheit(degrees);
