@@ -39,10 +39,7 @@ fn read_and_validate_menu_option() -> u8 {
 
         match maybe_valid_option {
             Some(num) => break num,
-            None => {
-                println!("{}", ERROR_MESSAGE_PROMPT);
-                continue;
-            }
+            None => log_error(),
         }
     };
 }
@@ -66,12 +63,13 @@ fn read_degrees() -> f32 {
 
         match degrees.trim().parse() {
             Ok(num) => break num,
-            Err(_) => {
-                println!("{}", ERROR_MESSAGE_PROMPT);
-                continue;
-            }
+            Err(_) => log_error(),
         };
     };
+}
+
+fn log_error() {
+    println!("{}", ERROR_MESSAGE_PROMPT);
 }
 
 fn fahrenheit_to_celsius(degrees: f32) -> f32 {
