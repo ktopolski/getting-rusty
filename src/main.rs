@@ -31,20 +31,28 @@ fn read_and_validate_menu_option() -> u8 {
             .read_line(&mut chosen_option)
             .expect("Failed to read line");
 
-        let chosen_option: u8 = match chosen_option.trim().parse() {
-            Ok(num) => num,
-            Err(_) => {
+        let maybe_valid_option: Option<u8> = chosen_option
+            .trim()
+            .parse()
+            .ok()
+            .and_then(|option| validate_menu_option(option));
+
+        match maybe_valid_option {
+            Some(num) => break num,
+            None => {
                 println!("{}", ERROR_MESSAGE_PROMPT);
                 continue;
             }
-        };
-        if chosen_option == 0 || chosen_option > 2 {
-            println!("{}", ERROR_MESSAGE_PROMPT);
-            continue;
-        } else {
-            break chosen_option;
         }
     };
+}
+
+fn validate_menu_option(option: u8) -> Option<u8> {
+    if (1..=2).contains(&option) {
+        Some(option)
+    } else {
+        None
+    }
 }
 
 fn read_degrees() -> f32 {
