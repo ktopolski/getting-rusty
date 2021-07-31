@@ -1,43 +1,19 @@
 use std::io;
-use std::ptr;
-use std::result::Result;
+
+const ERROR_MESSAGE_PROMPT: &str = "Really? Try again...";
 
 fn main() {
     display_menu();
     let chosen_option: u8 = read_and_validate_menu_option();
+    let degrees: f32 = read_degrees();
 
     if chosen_option == 1 {
-        println!("Converting F=>C");
-        let degrees: f32 = match read_degrees() {
-            Ok(num) => num,
-            Err(msg) => {
-                println!("{}", msg);
-                return;
-            }
-        };
-        match validate_fahrenheit_degrees(degrees) {
-            Ok(_) => {
-                let celsius_degrees = fahrenheit_to_celsius(degrees);
-                println!("{}F is roughly {}C", degrees, round_2(celsius_degrees));
-            }
-            Err(msg) => println!("{}", msg),
-        };
+        let celsius_degrees = fahrenheit_to_celsius(degrees);
+
+        println!("{}F is roughly {}C", degrees, round_2(celsius_degrees));
     } else {
-        println!("Converting C=>F");
-        let degrees: f32 = match read_degrees() {
-            Ok(num) => num,
-            Err(msg) => {
-                println!("{}", msg);
-                return;
-            }
-        };
-        match validate_celsius_degrees(degrees) {
-            Ok(_) => {
-                let fahrenheit_degrees = celsius_to_fahrenheit(degrees);
-                println!("{}C is roughly {}F", degrees, round_2(fahrenheit_degrees));
-            }
-            Err(msg) => println!("{}", msg),
-        };
+        let fahrenheit_degrees = celsius_to_fahrenheit(degrees);
+        println!("{}C is roughly {}F", degrees, round_2(fahrenheit_degrees));
     };
 }
 
@@ -58,12 +34,12 @@ fn read_and_validate_menu_option() -> u8 {
         let chosen_option: u8 = match chosen_option.trim().parse() {
             Ok(num) => num,
             Err(_) => {
-                println!("Really? Try again...");
+                println!("{}", ERROR_MESSAGE_PROMPT);
                 continue;
             }
         };
         if chosen_option == 0 || chosen_option > 2 {
-            println!("Really? Try again...");
+            println!("{}", ERROR_MESSAGE_PROMPT);
             continue;
         } else {
             break chosen_option;
@@ -71,37 +47,27 @@ fn read_and_validate_menu_option() -> u8 {
     };
 }
 
-fn read_degrees() -> Result<f32, String> {
+fn read_degrees() -> f32 {
     println!("Place your number for conversion:");
-    let mut degrees = String::new();
-    io::stdin()
-        .read_line(&mut degrees)
-        .expect("Failed to read line");
 
-    return match degrees.trim().parse() {
-        Ok(num) => Ok(num),
-        Err(_) => Err("Failed to parse number".to_string()),
+    return loop {
+        let mut degrees = String::new();
+        io::stdin()
+            .read_line(&mut degrees)
+            .expect("Failed to read line");
+
+        match degrees.trim().parse() {
+            Ok(num) => break num,
+            Err(_) => {
+                println!("{}", ERROR_MESSAGE_PROMPT);
+                continue;
+            }
+        };
     };
-}
-
-fn validate_fahrenheit_degrees(degrees: f32) -> Result<*const f32, String> {
-    if degrees >= -459.67 {
-        return Ok(ptr::null());
-    } else {
-        return Err("Given temperature is below absolute 0.".to_string());
-    }
 }
 
 fn fahrenheit_to_celsius(degrees: f32) -> f32 {
     return (degrees - 32.0) / 1.8;
-}
-
-fn validate_celsius_degrees(degrees: f32) -> Result<*const f32, String> {
-    if degrees >= -273.15 {
-        return Ok(ptr::null());
-    } else {
-        return Err("Given temperature is below absolute 0.".to_string());
-    }
 }
 
 fn celsius_to_fahrenheit(degrees: f32) -> f32 {
